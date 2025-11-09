@@ -3,11 +3,13 @@ import 'package:flutter_vai_ou_racha/telas/cadastro_cliente_tela.dart';
 import 'package:flutter_vai_ou_racha/telas/lista_cliente_tela.dart';
 
 class HomeTela extends StatelessWidget {
+  const HomeTela({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro de Clientes'),
+        title: const Text('Cadastro de Clientes'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -28,11 +30,17 @@ class HomeTela extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 20,
+                ),
               ),
-              child: Text('Adicionar Cliente', style: TextStyle(fontSize: 18)),
+              child: const Text(
+                'Adicionar Cliente',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -43,9 +51,15 @@ class HomeTela extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 20,
+                ),
               ),
-              child: Text('Listar Clientes', style: TextStyle(fontSize: 18)),
+              child: const Text(
+                'Listar Clientes',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
           ],
         ),
