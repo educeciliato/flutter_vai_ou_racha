@@ -15,7 +15,7 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
   final _formKey = GlobalKey<FormState>();
   late final nomeController = TextEditingController(text: widget.cliente?.nome);
   late final idadeController = TextEditingController(
-    text: widget.cliente?.idade.toString(),
+    text: widget.cliente?.idade?.toString(),
   );
   late final emailController = TextEditingController(
     text: widget.cliente?.email,
@@ -50,7 +50,16 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
         cpf: cpfController.text,
         endereco: enderecoController.text,
       );
-      Navigator.pop(context, cliente);
+
+      final db = DatabaseHelper.instance;
+
+      if (widget.cliente == null) {
+        await db.create(cliente);
+      } else {
+        await db.update(cliente);
+      }
+
+      Navigator.pop(context, true);
     }
   }
 
@@ -69,7 +78,7 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
         padding: EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 controller: nomeController,
@@ -77,11 +86,19 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
                   labelText: 'Nome',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'Digite o nome';
-                  }
-                },
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite o nome' : null,
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: idadeController,
+                decoration: InputDecoration(
+                  labelText: 'Idade',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite a idade' : null,
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -91,11 +108,12 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'Digite o E-mail!';
-                  } else if (!val.contains('@') || !val.contains('.com')) {
-                    return 'E-mail Inválido!';
+                  if (val == null || val.isEmpty) {
+                    return 'Digite o e-mail!';
+                  } else if (!val.contains('@') || !val.contains('.')) {
+                    return 'E-mail inválido!';
                   }
+                  return null;
                 },
               ),
               SizedBox(height: 16),
@@ -105,13 +123,8 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
                   labelText: 'Telefone',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'digite o telelforne!';
-                  } else if (val!.length < 10) {
-                    return 'Telefone Inválido!';
-                  }
-                },
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite o telefone!' : null,
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -120,46 +133,28 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
                   labelText: 'CPF',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'Digite o cpf!';
-                  } else if (val!.length < 11) {
-                    return 'CPF Inválido!';
-                  }
-                },
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite o CPF!' : null,
               ),
-              SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
-                    ),
-                    child: Text('Cancelar', style: TextStyle(fontSize: 18)),
-                  ),
-                  SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: salvar,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
-                    ),
-                    child: Text('Salvar', style: TextStyle(fontSize: 18)),
-                  ),
-                ],
+              SizedBox(height: 16),
+              TextFormField(
+                controller: enderecoController,
+                decoration: InputDecoration(
+                  labelText: 'Endereço',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite o endereço!' : null,
+              ),
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: salvar,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                child: Text('Salvar'),
               ),
             ],
           ),
