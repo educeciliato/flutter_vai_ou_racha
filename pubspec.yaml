@@ -1,5 +1,5 @@
 name: flutter_vai_ou_racha
-description: "A new Flutter project."
+description: "o Projeto mais preno do Brasil"
 publish_to: "none"
 version: 1.0.0+1
 
@@ -9,10 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
   sqflite: ^2.3.0
-  path_provider: ^2.1.1
-  path: ^1.8.3
+  sqflite_common_ffi: ^2.3.2
+  sqflite_common_ffi_web: ^0.4.3
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
