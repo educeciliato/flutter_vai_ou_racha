@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vai_ou_racha/model/cliente.dart';
+import 'package:flutter_vai_ou_racha/database/database_helper.dart';
 import 'package:flutter_vai_ou_racha/telas/cadastro_cliente_tela.dart';
 
 class ListaClientesTela extends StatefulWidget {
@@ -8,9 +9,34 @@ class ListaClientesTela extends StatefulWidget {
 }
 
 class _ListaClientesTelaState extends State<ListaClientesTela> {
-  Map<int, Cliente> clientes = <int, Cliente>{};
+  List<Cliente> clientes = [];
 
-  void editarCliente(Cliente cliente) async {
+  @override
+  void initState() {
+    super.initState();
+    carregarClientes();
+  }
+
+  Future<void> carregarClientes() async {
+    final db = DatabaseHelper.instance;
+    final lista = await db.readAllClientes();
+    setState(() {
+      clientes = lista;
+    });
+  }
+
+  Future<void> adicionarCliente() async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CadastroClienteTela()),
+    );
+
+    if (resultado == true) {
+      carregarClientes();
+    }
+  }
+
+  Future<void> editarCliente(Cliente cliente) async {
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -18,36 +44,15 @@ class _ListaClientesTelaState extends State<ListaClientesTela> {
       ),
     );
 
-    if (resultado != null) {
-      setState(() {
-        clientes[resultado.id] = resultado;
-      });
+    if (resultado == true) {
+      carregarClientes();
     }
   }
 
-  void deletarCliente(int? id) {
-    if (id == null) return;
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: Text('Confirmar'),
-          content: Text('Deseja excluir este cliente?'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Não')),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  clientes.remove(id);
-                });
-                Navigator.pop(ctx);
-              },
-              child: Text('Sim'),
-            ),
-          ],
-        );
-      },
-    );
+  Future<void> deletarCliente(int id) async {
+    final db = DatabaseHelper.instance;
+    await db.delete(id);
+    carregarClientes();
   }
 
   @override
@@ -64,7 +69,7 @@ class _ListaClientesTelaState extends State<ListaClientesTela> {
           : ListView.builder(
               itemCount: clientes.length,
               itemBuilder: (context, index) {
-                Cliente cliente = clientes.values.elementAt(index);
+                Cliente cliente = clientes[index];
                 return ListTile(
                   title: Text(cliente.nome),
                   subtitle: Text(cliente.email),
@@ -78,7 +83,7 @@ class _ListaClientesTelaState extends State<ListaClientesTela> {
                       ),
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => deletarCliente(cliente.id),
+                        onPressed: () => deletarCliente(cliente.id!),
                       ),
                     ],
                   ),
