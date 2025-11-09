@@ -7,6 +7,7 @@ class DatabaseHelper {
   static Database? _database;
 
   DatabaseHelper._init();
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('app_database.db');
@@ -14,11 +15,13 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB(String filePath) async {
-    final path = join(await getDatabasesPath(), filePath);
-    return await openDatabase(path, version: 1, onCreate: createDB);
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
-  Future<void> createDB(Database db, int version) async {
+  Future<void> _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE clientes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,59 +33,54 @@ class DatabaseHelper {
         cpf TEXT NOT NULL
       )
     ''');
-    Future<Cliente> create(Cliente cliente) async {
-      final db = await database;
-      final id = await db.insert('clientes', cliente.toJson());
-      return cliente.copyWith(id: id);
-    }
+  }
 
-    Future<Cliente?> readCliente(int id) async {
-      final db = await database;
-      final maps = await db.query(
-        'clientes',
-        columns: [
-          'id',
-          'nome',
-          'idade',
-          'email',
-          'telefone',
-          'endereco',
-          'cpf',
-        ],
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      if (maps.isNotEmpty) {
-        return Cliente.fromJson(maps.first);
-      } else {
-        return null;
-      }
-    }
+  Future<Cliente> create(Cliente cliente) async {
+    final db = await database;
+    final id = await db.insert('clientes', cliente.toJson());
+    return cliente.copyWith(id: id);
+  }
 
-    Future<List<Cliente>> readAllClientes() async {
-      final db = await database;
-      final result = await db.query('clientes');
-      return result.map((json) => Cliente.fromJson(json)).toList();
-    }
+  Future<Cliente?> readCliente(int id) async {
+    final db = await database;
 
-    Future<int> update(Cliente cliente) async {
-      final db = await database;
-      return db.update(
-        'clientes',
-        cliente.toJson(),
-        where: 'id = ?',
-        whereArgs: [cliente.id],
-      );
-    }
+    final maps = await db.query(
+      'clientes',
+      columns: ['id', 'nome', 'idade', 'email', 'telefone', 'endereco', 'cpf'],
+      where: 'id = ?',
+      whereArgs: [id],
+    );
 
-    Future<int> delete(int id) async {
-      final db = await database;
-      return await db.delete('clientes', where: 'id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return Cliente.fromJson(maps.first);
+    } else {
+      return null;
     }
+  }
 
-    Future close() async {
-      final db = await database;
-      db.close();
-    }
+  Future<List<Cliente>> readAllClientes() async {
+    final db = await database;
+    final result = await db.query('clientes');
+    return result.map((json) => Cliente.fromJson(json)).toList();
+  }
+
+  Future<int> update(Cliente cliente) async {
+    final db = await database;
+    return db.update(
+      'clientes',
+      cliente.toJson(),
+      where: 'id = ?',
+      whereArgs: [cliente.id],
+    );
+  }
+
+  Future<int> delete(int id) async {
+    final db = await database;
+    return await db.delete('clientes', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future close() async {
+    final db = await database;
+    db.close();
   }
 }
