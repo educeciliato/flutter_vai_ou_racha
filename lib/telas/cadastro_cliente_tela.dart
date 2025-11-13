@@ -27,6 +27,9 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
     text: widget.cliente?.endereco,
   );
   late final cpfController = TextEditingController(text: widget.cliente?.cpf);
+  late final pesoController = TextEditingController(
+    text: widget.cliente?.peso?.toString(),
+  );
 
   @override
   void dispose() {
@@ -36,6 +39,7 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
     telefoneController.dispose();
     enderecoController.dispose();
     cpfController.dispose();
+    pesoController.dispose();
     super.dispose();
   }
 
@@ -49,6 +53,7 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
         telefone: telefoneController.text,
         cpf: cpfController.text,
         endereco: enderecoController.text,
+        peso: double.parse(pesoController.text),
       );
 
       final db = DatabaseHelper.instance;
@@ -145,6 +150,16 @@ class _CadastroClienteTelaState extends State<CadastroClienteTela> {
                 ),
                 validator: (val) =>
                     val == null || val.isEmpty ? 'Digite o endereço!' : null,
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: pesoController,
+                decoration: InputDecoration(
+                  labelText: 'Peso',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Digite o peso' : null,
               ),
               SizedBox(height: 24),
               ElevatedButton(
