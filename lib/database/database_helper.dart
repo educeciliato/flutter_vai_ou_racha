@@ -30,7 +30,8 @@ class DatabaseHelper {
         email TEXT NOT NULL,
         telefone TEXT NOT NULL,
         endereco TEXT NOT NULL,
-        cpf TEXT NOT NULL
+        cpf TEXT NOT NULL,
+        peso REAL NOT NULL
       )
     ''');
   }
@@ -46,7 +47,16 @@ class DatabaseHelper {
 
     final maps = await db.query(
       'clientes',
-      columns: ['id', 'nome', 'idade', 'email', 'telefone', 'endereco', 'cpf'],
+      columns: [
+        'id',
+        'nome',
+        'idade',
+        'email',
+        'telefone',
+        'endereco',
+        'cpf',
+        'peso',
+      ],
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -82,5 +92,13 @@ class DatabaseHelper {
   Future close() async {
     final db = await database;
     db.close();
+  }
+
+  Future<void> resetDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'app_database.db');
+    await deleteDatabase(path);
+    _database = null;
+    print('Database reset completed.');
   }
 }
