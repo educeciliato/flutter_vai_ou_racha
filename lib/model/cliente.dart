@@ -6,6 +6,7 @@ class Cliente {
   final String telefone;
   final String endereco;
   final String cpf;
+  final double peso;
 
   Cliente({
     this.id,
@@ -15,6 +16,7 @@ class Cliente {
     required this.telefone,
     required this.endereco,
     required this.cpf,
+    required this.peso,
   });
   factory Cliente.fromJson(Map<String, dynamic> json) {
     return Cliente(
@@ -25,6 +27,7 @@ class Cliente {
       telefone: json['telefone'],
       endereco: json['endereco'],
       cpf: json['cpf'],
+      peso: (json['peso'] as num?)?.toDouble() ?? 0.0,
     );
   }
   Map<String, dynamic> toJson() {
@@ -36,6 +39,7 @@ class Cliente {
       'telefone': telefone,
       'endereco': endereco,
       'cpf': cpf,
+      'peso': peso,
     };
   }
 
@@ -47,6 +51,7 @@ class Cliente {
     String? telefone,
     String? endereco,
     String? cpf,
+    double? peso,
   }) {
     return Cliente(
       id: id ?? this.id,
@@ -56,6 +61,7 @@ class Cliente {
       telefone: telefone ?? this.telefone,
       endereco: endereco ?? this.endereco,
       cpf: cpf ?? this.cpf,
+      peso: peso ?? this.peso,
     );
   }
 }
